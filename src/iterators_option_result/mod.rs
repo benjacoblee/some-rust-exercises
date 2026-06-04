@@ -1,5 +1,7 @@
 #![allow(unused)]
 
+use std::{collections::HashMap, vec};
+
 pub fn sum_even_squares(v: &[i32]) -> i32 {
     v.iter()
         .filter_map(|&n| if n % 2 == 0 { Some(n * n) } else { None })
@@ -33,4 +35,42 @@ pub fn longest<'a>(strings: &'a [&str]) -> Option<&'a str> {
         "" => None,
         _ => Some(v),
     }
+}
+
+pub fn unwrap_or_empty(v: Result<Vec<i32>, String>) -> Vec<i32> {
+    if let Ok(o) = v { o } else { vec![] }
+}
+
+pub fn flatten_option<T>(opt: Option<Option<T>>) -> Option<T> {
+    if let Some(o) = opt { o } else { None }
+}
+
+pub fn sum_map_values(m: &HashMap<String, i32>) -> i32 {
+    m.iter().fold(0, |mut acc, (_, val)| {
+        acc += val;
+        acc
+    })
+}
+
+pub fn partition_evens_odds<F, T: Copy>(pred: F, vals: Vec<T>) -> (Vec<T>, Vec<T>)
+where
+    F: Fn(T) -> bool,
+{
+    // vals.iter().partition(|&&item| pred(item))
+
+    let lefts: Vec<T> = vec![];
+    let rights: Vec<T> = vec![];
+
+    vals.iter().fold((lefts, rights), |mut acc, &curr| {
+        match pred(curr) {
+            true => acc.0.push(curr),
+            _ => acc.1.push(curr),
+        }
+
+        acc
+    })
+}
+
+pub fn map_result<T, U, E>(r: Result<T, E>, f: impl FnOnce(T) -> U) -> Result<U, E> {
+    r.map(f)
 }
