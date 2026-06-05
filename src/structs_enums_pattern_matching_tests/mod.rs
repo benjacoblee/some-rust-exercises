@@ -39,3 +39,49 @@ fn it_categorizes_by_age_bracket() {
     let res = age_bracket(people).get(&AgeBracket::Child).cloned();
     assert_eq!(res, Some(vec![larry, cass]));
 }
+
+#[test]
+fn it_sorta_parses_ip_addresses() {
+    let res = parse_ipv4("192.168.0.1");
+    let expected: [u8; 4] = [192, 168, 0, 1];
+    assert_eq!(res, Ok(expected));
+    let res = parse_ipv4("192.168.9");
+    assert_eq!(res, Err("parts_err"));
+    let res = parse_ipv4("192.168.9.asd");
+    assert_eq!(res, Err("parse_err"));
+}
+
+#[test]
+fn it_deconstructs_a_point() {
+    let p = into_tuple(Point { x: 3, y: 3 });
+    let t = (3, 3);
+    assert_eq!(p, t);
+}
+
+#[test]
+fn it_doubles_int_value() {
+    let res = double_int(Value::Int(3));
+    assert!(res == Value::Int(6));
+}
+
+#[test]
+fn it_finds_item_and_returns_index() {
+    let res = find_index(&vec![1, 2, 3, 4, 5], &2);
+    assert!(res == Some(1));
+}
+
+#[test]
+fn it_implements_display_for_person() {
+    let person = Person {
+        name: "Dan".into(),
+        age: 32,
+    };
+
+    println!("{}", person.to_string())
+}
+
+#[test]
+fn it_implements_try_from_for_non_zero() {
+    let res: Result<NonZero, &str> = 32.try_into();
+    assert_eq!(res, Ok(NonZero(32)));
+}
