@@ -55,7 +55,7 @@ pub fn age_bracket(people: Vec<Person>) -> HashMap<AgeBracket, Vec<Person>> {
         HashMap::new(),
         |mut acc: HashMap<AgeBracket, Vec<Person>>, p| {
             let ab = get_age_bracket(p.age);
-            acc.entry(ab).or_insert_with(Vec::new).push(p);
+            acc.entry(ab).or_default().push(p);
             acc
         },
     )
@@ -68,7 +68,7 @@ pub fn try_parse_u8(o: Option<&str>) -> Result<u8, &'static str> {
 }
 
 pub fn parse_ipv4(s: &str) -> Result<[u8; 4], &'static str> {
-    let mut parts = s.split('.').into_iter();
+    let mut parts = s.split('.');
     let a1 = try_parse_u8(parts.next())?;
     let a2 = try_parse_u8(parts.next())?;
     let a3 = try_parse_u8(parts.next())?;
