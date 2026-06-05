@@ -1,3 +1,5 @@
+mod collections;
+mod collections_tests;
 mod iterators_option_result;
 mod iterators_option_result_tests;
 mod string_handling_parsing;
