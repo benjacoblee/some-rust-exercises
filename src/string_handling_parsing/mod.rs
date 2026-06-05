@@ -29,12 +29,7 @@ pub fn word_counts(s: &str) -> HashMap<String, usize> {
 }
 
 pub fn extract_hash_tags(s: &str) -> Vec<&str> {
-    s.split(' ')
-        .filter_map(|el| match el.starts_with("#") {
-            true => Some(el),
-            false => None,
-        })
-        .collect()
+    s.split(' ').filter(|el| el.starts_with("#")).collect()
 }
 
 pub fn parse_k_v(s: &str) -> HashMap<String, String> {
@@ -55,8 +50,7 @@ pub fn parse_k_v(s: &str) -> HashMap<String, String> {
 
 pub fn alphanumeric_only(s: &str) -> String {
     s.chars()
-        .into_iter()
-        .filter_map(|ch| if ch.is_alphanumeric() { Some(ch) } else { None })
+        .filter(|ch| ch.is_alphanumeric())
         .collect::<String>()
 }
 

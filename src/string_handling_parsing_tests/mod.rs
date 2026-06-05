@@ -13,7 +13,7 @@ fn it_parses_csv_strings_to_int() {
 
 #[test]
 fn it_joins_commas() {
-    let r = join_comma(&vec!["abc".to_string(), "def".to_string()]);
+    let r = join_comma(&["abc".to_string(), "def".to_string()]);
     assert_eq!(r, "abc,def".to_string());
 }
 
@@ -35,7 +35,7 @@ fn it_counts_words() {
 #[test]
 fn it_extracts_hashtags() {
     let ms = "this that #wow #banana something";
-    let result = extract_hash_tags(&ms);
+    let result = extract_hash_tags(ms);
     assert_eq!(result, vec!["#wow", "#banana"]);
 }
 
@@ -48,7 +48,7 @@ fn it_parses_key_values() {
     .into_iter()
     .collect();
     let ms = "wow=banana,other=thing";
-    assert_eq!(parse_k_v(&ms), my_map);
+    assert_eq!(parse_k_v(ms), my_map);
 }
 
 #[test]

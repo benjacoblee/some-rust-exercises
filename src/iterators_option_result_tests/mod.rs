@@ -7,7 +7,7 @@ use crate::iterators_option_result::*;
 #[cfg(test)]
 #[test]
 fn it_sums_and_squares_even_numbers() {
-    let result = sum_even_squares(&vec![1, 2, 3, 4, 5]);
+    let result = sum_even_squares(&[1, 2, 3, 4, 5]);
     assert_eq!(result, 20);
 }
 
@@ -53,7 +53,7 @@ fn it_sums_values() {
     //    pub fn sum_map_values(m: &HashMap<String, i32>) -> i32 {
     let vals = vec![("a".to_string(), 4), ("b".to_string(), 5)];
     let m: HashMap<String, i32> = vals.into_iter().collect();
-    println!("{:?}", &m);
+    println!("{:?}", m);
     assert_eq!(sum_map_values(&m), 9);
 }
 

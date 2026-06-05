@@ -5,7 +5,6 @@ use std::{collections::HashMap, vec};
 pub fn sum_even_squares(v: &[i32]) -> i32 {
     v.iter()
         .filter_map(|&n| if n % 2 == 0 { Some(n * n) } else { None })
-        .into_iter()
         .sum::<i32>()
 }
 
@@ -14,9 +13,7 @@ pub fn first_some<T>(v: Vec<Option<T>>) -> Option<T> {
 }
 
 pub fn oks<T, E>(v: Vec<Result<T, E>>) -> Vec<T> {
-    v.into_iter()
-        .filter_map(|opt| if let Ok(o) = opt { Some(o) } else { None })
-        .collect()
+    v.into_iter().filter_map(|opt| opt.ok()).collect()
 }
 
 pub fn flatten<T: Clone>(v: Vec<Vec<T>>) -> Vec<T> {
@@ -38,11 +35,11 @@ pub fn longest<'a>(strings: &'a [&str]) -> Option<&'a str> {
 }
 
 pub fn unwrap_or_empty(v: Result<Vec<i32>, String>) -> Vec<i32> {
-    if let Ok(o) = v { o } else { vec![] }
+    v.unwrap_or_default()
 }
 
 pub fn flatten_option<T>(opt: Option<Option<T>>) -> Option<T> {
-    if let Some(o) = opt { o } else { None }
+    opt.unwrap_or_default()
 }
 
 pub fn sum_map_values(m: &HashMap<String, i32>) -> i32 {

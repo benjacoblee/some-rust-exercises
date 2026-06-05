@@ -66,7 +66,7 @@ fn it_doubles_int_value() {
 
 #[test]
 fn it_finds_item_and_returns_index() {
-    let res = find_index(&vec![1, 2, 3, 4, 5], &2);
+    let res = find_index(&[1, 2, 3, 4, 5], &2);
     assert!(res == Some(1));
 }
 
@@ -77,7 +77,7 @@ fn it_implements_display_for_person() {
         age: 32,
     };
 
-    println!("{}", person.to_string())
+    println!("{}", person)
 }
 
 #[test]
