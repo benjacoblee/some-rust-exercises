@@ -52,9 +52,7 @@ pub fn age_bracket(people: Vec<Person>) -> HashMap<AgeBracket, Vec<Person>> {
         HashMap::new(),
         |mut acc: HashMap<AgeBracket, Vec<Person>>, p| {
             let ab = get_age_bracket(p.age);
-            acc.entry(ab)
-                .and_modify(|brack| brack.push(p.clone()))
-                .or_insert(vec![p]);
+            acc.entry(ab).or_insert_with(Vec::new).push(p);
             acc
         },
     )
