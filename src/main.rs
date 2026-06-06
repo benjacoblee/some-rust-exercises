@@ -6,6 +6,8 @@ mod generics_traits;
 mod generics_traits_tests;
 mod iterators_option_result;
 mod iterators_option_result_tests;
+mod misc;
+mod misc_tests;
 mod ownership;
 mod ownership_tests;
 mod string_handling_parsing;
