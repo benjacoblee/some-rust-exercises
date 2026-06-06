@@ -137,7 +137,7 @@ pub fn min_max(v: &[i32]) -> Option<(i32, i32)> {
         return Some((hd, hd));
     }
 
-    let r = v[2..].iter().fold((i32::MAX, i32::MIN), |acc, &cur| {
+    let r = v.iter().fold((i32::MAX, i32::MIN), |acc, &cur| {
         let new_min = if cur < acc.0 { cur } else { acc.0 };
         let new_max = if cur > acc.1 { cur } else { acc.1 };
         (new_min, new_max)
