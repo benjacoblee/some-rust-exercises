@@ -1,5 +1,7 @@
 mod collections;
 mod collections_tests;
+mod err_res_chaining;
+mod err_res_chaining_tests;
 mod iterators_option_result;
 mod iterators_option_result_tests;
 mod ownership;
