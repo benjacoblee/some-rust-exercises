@@ -3,6 +3,7 @@
 use std::{
     collections::HashMap,
     fmt::{Display, Formatter},
+    ops::Add,
 };
 
 pub fn aggregate_tuples(v: Vec<(char, i32)>) -> HashMap<char, i32> {
@@ -123,5 +124,88 @@ impl TryFrom<i32> for NonZero {
         } else {
             Ok(NonZero(value))
         }
+    }
+}
+
+pub struct Config {
+    pub prefix: String,
+    pub debug: bool,
+    pub timeout: u32,
+}
+
+impl Config {
+    pub fn default() -> Self {
+        Self {
+            prefix: "".to_string(),
+            debug: false,
+            timeout: 5000,
+        }
+    }
+
+    pub fn with_prefix(&self, p: &str) -> Self {
+        Self {
+            prefix: p.to_string(),
+            debug: self.debug,
+            timeout: self.timeout,
+        }
+    }
+}
+
+pub struct Counter<T> {
+    pub v: T,
+}
+
+impl<T: Add<Output = T> + Copy> Counter<T> {
+    pub fn increment(&self, step: T) -> Self {
+        Self { v: self.v + step }
+    }
+
+    pub fn default(v: T) -> Self {
+        Self { v }
+    }
+}
+
+pub enum Packet {
+    Number(i64),
+    Text(String),
+    Binary(Vec<u8>),
+    Null,
+}
+
+pub fn extract_number(p: Packet) -> Option<i64> {
+    match p {
+        Packet::Number(i) => Some(i),
+        _ => None,
+    }
+}
+
+pub fn texts_only(v: Vec<Packet>) -> Vec<String> {
+    v.iter()
+        .filter_map(|p| match p {
+            Packet::Text(t) => Some(t.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn sort_by_age(mut people: Vec<Person>) -> Vec<Person> {
+    people.sort_by_key(|a| a.age);
+    people
+}
+
+pub struct Score {
+    pub value: i32,
+    pub name: String,
+}
+
+impl PartialEq for Score {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value && self.name == other.name
+    }
+}
+
+impl PartialOrd for Score {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.value.cmp(&other.value))
     }
 }

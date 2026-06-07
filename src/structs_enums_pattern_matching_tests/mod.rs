@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use crate::structs_enums_pattern_matching::*;
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Deref};
 
 #[cfg(test)]
 #[test]
@@ -84,4 +84,69 @@ fn it_implements_display_for_person() {
 fn it_implements_try_from_for_non_zero() {
     let res: Result<NonZero, &str> = 32.try_into();
     assert_eq!(res, Ok(NonZero(32)));
+}
+
+#[test]
+fn it_impls_config_with_builder_pattern() {
+    let cfg = Config::default().with_prefix("some prefix");
+    assert_eq!(cfg.prefix, "some prefix");
+}
+
+#[test]
+fn it_increments_counter() {
+    let counter = Counter::default(0).increment(1).increment(1).increment(1);
+    assert_eq!(counter.v, 3);
+}
+
+#[test]
+fn it_extracts_n_from_a_packet() {
+    let p = Packet::Number(4);
+    assert_eq!(extract_number(p), Some(4));
+}
+
+#[test]
+fn it_extracts_text_packets_only() {
+    let v = vec![
+        Packet::Number(2),
+        Packet::Null,
+        Packet::Text("something".to_string()),
+    ];
+    let r = texts_only(v);
+    assert!(r == vec!["something".to_string()])
+}
+
+#[test]
+fn it_sorts_people_by_age() {
+    let people = vec![
+        Person {
+            name: "alice".to_string(),
+            age: 54,
+        },
+        Person {
+            name: "bob".to_string(),
+            age: 99,
+        },
+        Person {
+            name: "john".to_string(),
+            age: 1,
+        },
+    ];
+
+    let sorted = sort_by_age(people);
+    assert_eq!(sorted.first().unwrap().name, "john".to_string())
+}
+
+#[test]
+fn it_impls_partial_ord_for_score() {
+    let s1 = Score {
+        name: "".to_string(),
+        value: 44,
+    };
+
+    let s2 = Score {
+        name: "".to_string(),
+        value: 67,
+    };
+
+    assert!(s2 > s1);
 }
