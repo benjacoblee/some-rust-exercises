@@ -113,3 +113,13 @@ pub fn it_returns_eq_false_on_bad_list() {
     let l = &[1, 2];
     assert!(!all_eq(l));
 }
+
+#[test]
+pub fn it_clamps_i32s() {
+    let v = &[1, 2, 3, 100, 44];
+    let lo = 3;
+    let hi = 50;
+    let expected = &[3, 3, 3, 50, 44];
+    let res = clamp_all(v, lo, hi);
+    assert_eq!(&res, expected);
+}

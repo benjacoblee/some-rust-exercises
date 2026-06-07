@@ -152,3 +152,15 @@ pub fn all_eq<T: PartialEq + std::default::Default>(v: &[T]) -> bool {
         Some((hd, tl)) => tl.iter().all(|it| it == hd),
     }
 }
+
+pub fn clamp_all(v: &[i32], lo: i32, hi: i32) -> Vec<i32> {
+    v.iter()
+        .map(|&i| {
+            if i < lo {
+                return lo;
+            }
+
+            if i > hi { hi } else { i }
+        })
+        .collect()
+}
