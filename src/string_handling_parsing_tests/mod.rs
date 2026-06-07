@@ -83,3 +83,68 @@ fn it_trims_and_collapses_whitespace() {
     let r = normalize_whitespace("    a        person    ");
     assert_eq!(r, "a person")
 }
+
+#[test]
+fn it_counts_vowels_correctly() {
+    let r = count_vowels("bbbaeiou");
+    assert!(r == 5);
+}
+
+#[test]
+fn it_checks_palindromicity_correctly() {
+    assert!(is_palindrome("s"));
+    assert!(is_palindrome(""));
+    assert!(is_palindrome("racecar"));
+    assert!(!is_palindrome("bubba"))
+}
+
+#[test]
+fn it_titlecases_strings() {
+    assert!(title_case("wow dude") == "Wow Dude");
+}
+
+#[test]
+fn it_truncates_strings() {
+    assert!(truncate("somestring", 200) == "somestring");
+    assert!(truncate("somestring", 5) == "somes")
+}
+
+#[test]
+fn it_capitalizes_first_word() {
+    let s = "she sells sea shells";
+    assert!(capitalize_first(s) == "She sells sea shells")
+}
+
+#[test]
+fn it_counts_newlines() {
+    let s = "some thing
+    another thing
+    ";
+    assert!(count_lines(s) == 3)
+}
+
+#[test]
+fn it_gets_the_longest_word() {
+    let s = "something other areallylongword or whatever.";
+    assert_eq!(longest_word(s), Some("areallylongword"));
+}
+
+#[test]
+fn it_replaces_words() {
+    let s = "that is really something isnt it. something for sure";
+    let expected = "that is really nothing isnt it. nothing for sure";
+    let res = replace_all(s, "something", "nothing");
+    assert_eq!(res, expected);
+}
+
+#[test]
+fn it_adds_indent() {
+    let s = "wow.\nreally amazing";
+    let res = indent(s, 4);
+    let mut cur = res.split('\n').map(|s| s.to_string()).peekable();
+    let w = cur.peek();
+    assert_eq!(Some("    wow."), w.map(|el| el.as_str()));
+    cur.next();
+    let w = cur.peek();
+    assert_eq!(Some("    really amazing"), w.map(|el| el.as_str()));
+}

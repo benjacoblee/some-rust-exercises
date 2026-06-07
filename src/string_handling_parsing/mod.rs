@@ -1,6 +1,7 @@
+#![feature(iter_intersperse)]
 #![allow(unused)]
 
-use std::{collections::HashMap, num::ParseIntError};
+use std::{collections::HashMap, fmt::format, num::ParseIntError};
 
 pub fn parse_csv_ints(s: &str) -> Result<Vec<i32>, ParseIntError> {
     s.split(',').map(|e| e.parse::<i32>()).collect()
@@ -101,4 +102,92 @@ pub fn normalize_whitespace(s: &str) -> String {
         .split_ascii_whitespace()
         .collect::<Vec<&str>>()
         .join(" ")
+}
+
+fn is_v(v: char) -> bool {
+    "aeiou".contains(v)
+}
+
+pub fn count_vowels(s: &str) -> usize {
+    s.to_lowercase()
+        .chars()
+        .fold(0, |acc, ch| if is_v(ch) { acc + 1 } else { acc })
+}
+
+pub fn is_palindrome(s: &str) -> bool {
+    let mine: String = s.chars().rev().collect();
+    mine == s
+}
+
+pub fn title_case(s: &str) -> String {
+    s.split(' ')
+        .map(|w| {
+            w.chars()
+                .enumerate()
+                .map(|(pos, ch)| {
+                    if pos == 0 {
+                        ch.to_ascii_uppercase()
+                    } else {
+                        ch
+                    }
+                })
+                .collect()
+        })
+        .collect::<Vec<String>>()
+        .join(" ")
+}
+
+pub fn truncate(s: &str, n: usize) -> &str {
+    if n > s.len() { s } else { &s[0..n] }
+}
+
+pub fn capitalize_helper(s: &str) -> String {
+    s.chars()
+        .enumerate()
+        .map(|(i, ch)| if i == 0 { ch.to_ascii_uppercase() } else { ch })
+        .collect()
+}
+
+pub fn capitalize_first(s: &str) -> String {
+    match s.split_once(' ') {
+        None => capitalize_helper(s),
+        Some((hd, tl)) => {
+            let new_head = capitalize_helper(hd);
+            format!("{new_head} {tl}")
+        }
+    }
+}
+
+pub fn count_lines(s: &str) -> usize {
+    s.split('\n').count()
+}
+
+pub fn longest_word(s: &str) -> Option<&str> {
+    match s.split_once(" ") {
+        None => None,
+        Some((hd, tl)) => {
+            let v = tl.split(" ").fold(
+                hd,
+                |acc, curr| {
+                    if curr.len() > acc.len() { curr } else { acc }
+                },
+            );
+
+            Some(v)
+        }
+    }
+}
+
+pub fn replace_all(s: &str, from: &str, to: &str) -> String {
+    s.split(" ")
+        .map(|w| if w == from { to } else { w })
+        .collect::<Vec<&str>>()
+        .join(" ")
+}
+
+pub fn indent(s: &str, spaces: usize) -> String {
+    s.split('\n')
+        .map(|el| format!("{}{}", " ".repeat(spaces), el))
+        .collect::<Vec<String>>()
+        .join("\n")
 }
