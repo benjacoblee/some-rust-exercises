@@ -64,3 +64,58 @@ pub fn zip_with<A: Clone, B: Clone, C>(a: Vec<A>, b: Vec<B>, f: impl Fn(A, B) ->
         .map(|(a, b)| f(a.to_owned(), b.to_owned()))
         .collect()
 }
+
+pub fn increment_all(m: &mut HashMap<String, i32>) {
+    m.iter_mut().for_each(|(_k, v)| *v += 1);
+}
+
+pub fn filter_map_values(m: &HashMap<String, i32>, threshold: i32) -> HashMap<String, i32> {
+    m.iter().fold(HashMap::new(), |mut acc, (k, &v)| {
+        if v <= threshold {
+            acc.insert(k.to_string(), v);
+        }
+
+        acc
+    })
+}
+
+pub fn sorted_by_freq(s: &str) -> Vec<(char, usize)> {
+    let strs = s.chars().collect::<Vec<char>>();
+    let m = strs.iter().fold(HashMap::new(), |mut acc, &ch| {
+        *acc.entry(ch).or_insert(0) += 1;
+        acc
+    });
+    let mut vals = m
+        .iter()
+        .map(|(&k, &v)| (k, v))
+        .collect::<Vec<(char, usize)>>();
+
+    vals.sort_by(|(_, av), (_, bv)| bv.cmp(av));
+
+    vals
+}
+
+pub fn max_per_key(pairs: Vec<(String, i32)>) -> HashMap<String, i32> {
+    pairs.iter().fold(HashMap::new(), |mut acc, (k, v)| {
+        let got: i32 = *acc.entry(k.to_string()).or_default();
+        let max = std::cmp::max(got, *v);
+        acc.insert(k.to_string(), max);
+        acc
+    })
+}
+
+pub fn transpose_records(records: Vec<HashMap<String, i32>>) -> HashMap<String, Vec<i32>> {
+    records.iter().fold(HashMap::new(), |mut acc, curr| {
+        let mut cur_owned = curr.to_owned();
+
+        cur_owned.drain().for_each(|(k, v)| {
+            acc.entry(k).or_insert_with(Vec::new).push(v);
+        });
+
+        acc
+    })
+}
+
+pub fn flatten_options<T>(v: Vec<Option<T>>) -> Vec<T> {
+    v.into_iter().flatten().collect::<Vec<T>>()
+}

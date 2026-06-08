@@ -60,3 +60,64 @@ fn it_zips_with_fn() {
     let res = zip_with(a, b, |a, b| a + b);
     assert!(res == vec![5, 7, 9]);
 }
+
+#[test]
+fn it_increments_all_values_in_hashmap() {
+    let mut m: HashMap<String, i32> = vec![("a".to_string(), 1), ("b".to_string(), 1)]
+        .into_iter()
+        .collect();
+    increment_all(&mut m);
+    let r = m.iter().map(|(_, &v)| v).collect::<Vec<i32>>();
+    assert!(r.iter().all(|&v| v == 2))
+}
+
+#[test]
+fn it_keeps_items_within_threshold() {
+    let t = 32;
+    let m: HashMap<String, i32> = vec![("a".to_string(), 42), ("b".to_string(), 1)]
+        .into_iter()
+        .collect();
+    let r = filter_map_values(&m, t);
+    assert!(r.values().len() == 1);
+}
+
+#[test]
+fn it_sorts_freqmap_by_freq_desc() {
+    let s = "abcabcaaaaaaaaaa!";
+    let r = sorted_by_freq(s);
+    assert!(r.first().unwrap().0 == 'a');
+    assert!(r.last().unwrap().0 == '!');
+}
+
+#[test]
+fn it_keeps_maxes() {
+    let pairs = vec![
+        ("a".to_string(), 5),
+        ("b".to_string(), 3),
+        ("a".to_string(), 8),
+        ("b".to_string(), 2),
+    ];
+
+    let r = max_per_key(pairs);
+
+    assert!(r.get("a") == Some(&8));
+    assert!(r.get("b") == Some(&3));
+}
+
+#[test]
+fn it_transposes_records() {
+    let r1: HashMap<String, i32> = vec![("a".into(), 2), ("b".into(), 3)].into_iter().collect();
+    let r2: HashMap<String, i32> = vec![("a".into(), 5)].into_iter().collect();
+
+    let records = vec![r1, r2];
+    let result = transpose_records(records);
+
+    assert_eq!(result.get("a"), Some(&vec![2, 5]));
+}
+
+#[test]
+fn it_flattens_options() {
+    let v = vec![Some(2), Some(3), None];
+    let r = flatten_options(v);
+    assert_eq!(r, vec![2, 3]);
+}
