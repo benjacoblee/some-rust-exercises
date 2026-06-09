@@ -1,3 +1,5 @@
+mod closures_iterators;
+mod closures_iterators_test;
 mod collections;
 mod collections_tests;
 mod err_res_chaining;
