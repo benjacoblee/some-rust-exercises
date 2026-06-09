@@ -86,3 +86,83 @@ pub fn validate_person(name: &str, age: i32) -> Result<Person, Vec<String>> {
         }),
     }
 }
+
+pub fn is_valid_email(s: &str) -> bool {
+    let r = s.split_once("@");
+
+    match r {
+        None => false,
+        Some((_, rest)) => rest.contains("."),
+    }
+}
+
+pub fn first_even_double(v: &[i32]) -> Option<i32> {
+    v.iter().fold(None, |acc, curr| {
+        if acc.is_some() {
+            return acc;
+        }
+
+        if curr % 2 == 0 { Some(curr * 2) } else { None }
+    })
+}
+
+pub fn parse_all_ints(v: &[&str]) -> Result<Vec<i32>, String> {
+    v.iter()
+        .map(|i| i.parse::<i32>().map_err(|_| "Some issue".to_string()))
+        .collect()
+}
+
+pub fn get_nested(outer: Option<Option<i32>>) -> i32 {
+    outer.unwrap_or_default().unwrap_or_default()
+}
+
+pub fn double_oks(v: Vec<Result<i32, String>>) -> Vec<Result<i32, String>> {
+    v.into_iter().map(|r| r.map(|i| i * 2)).collect()
+}
+
+pub fn split_results<T, E>(v: Vec<Result<T, E>>) -> (Vec<T>, Vec<E>) {
+    v.into_iter().fold((vec![], vec![]), |mut acc, curr| {
+        match curr {
+            Err(e) => acc.1.push(e),
+            Ok(v) => acc.0.push(v),
+        }
+
+        acc
+    })
+}
+
+pub fn first_ok<T: Clone, E>(v: &[Result<T, E>]) -> Option<T> {
+    let oks = v
+        .iter()
+        .map(|item| item.as_ref().ok())
+        .collect::<Vec<Option<&T>>>();
+    oks.iter().find(|&i| i.is_some())?.cloned()
+}
+
+pub fn validate_empty(x: &str) -> Result<(), String> {
+    if x.is_empty() {
+        Err("Cannot be empty".to_string())
+    } else {
+        Ok(())
+    }
+}
+
+pub fn validate_len(x: &str) -> Result<(), String> {
+    if x.len() >= 3 {
+        Ok(())
+    } else {
+        Err("Cannot be less than 3 chars".to_string())
+    }
+}
+
+pub fn validate_password(s: &str) -> Result<(), Vec<String>> {
+    let rules = &[validate_empty, validate_len];
+
+    let errs = rules
+        .iter()
+        .map(|f| f(s))
+        .filter_map(|item| item.err())
+        .collect::<Vec<String>>();
+
+    if errs.is_empty() { Ok(()) } else { Err(errs) }
+}
