@@ -14,6 +14,8 @@ mod string_handling_parsing;
 mod string_handling_parsing_tests;
 mod structs_enums_pattern_matching;
 mod structs_enums_pattern_matching_tests;
+mod traits;
+mod traits_tests;
 
 fn main() {
     println!("Hello, world!");
