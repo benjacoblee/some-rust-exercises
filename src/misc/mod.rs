@@ -164,3 +164,14 @@ pub fn clamp_all(v: &[i32], lo: i32, hi: i32) -> Vec<i32> {
         })
         .collect()
 }
+
+pub fn count_pairs(s: &str, open: char, close: char) -> usize {
+    let (l, r) = s.chars().fold((0, 0), |acc, ch| match ch {
+        v if v == open => (acc.0 + 1, acc.1),
+        v if v == close => (acc.0, acc.1 + 1),
+        _ => acc,
+    });
+
+    let (larger, smaller) = if l >= r { (l, r) } else { (r, l) };
+    smaller as usize
+}

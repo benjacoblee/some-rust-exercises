@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 use crate::generics_traits::*;
 
@@ -70,4 +70,37 @@ pub fn it_merges_maps() {
 pub fn it_runs_some_for_each() {
     let items = &[1, 2, 3, 4, 5];
     my_for_each(items, |item| println!("{}", item));
+}
+
+#[test]
+pub fn it_gets_first_named_box_item() {
+    let d = Dog { name: "dango" };
+    let d2 = Dog { name: "daisy" };
+    let h = Human { name: "wtv" };
+    let v: &[Box<dyn Named>] = &[Box::new(d), Box::new(d2), Box::new(h)];
+    let r = get_first_name(v);
+    assert_eq!(r, Some("dango"))
+}
+
+#[test]
+pub fn it_safely_zips() {
+    let f = |a, b| (a, b);
+    let a = Some("a");
+    let b = Some(1);
+    let r = safe_zip_with(a, b, f);
+    assert_eq!(r, Some(("a", 1)));
+    assert_eq!(safe_zip_with(None, Some(2), f), None);
+}
+
+#[test]
+pub fn it_converts_dog_to_string() {
+    let d = Dog { name: "Dango" };
+    let r = make_string(d);
+    assert_eq!(r, "Dango".to_string())
+}
+
+#[test]
+pub fn it_impls_deref() {
+    let mv = MyVec(vec![1, 2, 3, 4]);
+    assert_eq!(vec![1, 2, 3, 4], *mv)
 }

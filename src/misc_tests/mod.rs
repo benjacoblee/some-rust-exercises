@@ -123,3 +123,15 @@ pub fn it_clamps_i32s() {
     let res = clamp_all(v, lo, hi);
     assert_eq!(&res, expected);
 }
+
+#[test]
+pub fn it_counts_pairs_correctly() {
+    let open = '(';
+    let close = ')';
+    let s = "((()))";
+    assert_eq!(count_pairs(s, open, close), 3);
+    let s = "((())))";
+    assert_eq!(count_pairs(s, open, close), 3);
+    let s = "(((";
+    assert_eq!(count_pairs(s, open, close), 0);
+}

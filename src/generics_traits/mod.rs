@@ -2,8 +2,9 @@
 
 use std::{
     collections::{HashMap, HashSet},
+    fmt::format,
     hash::Hash,
-    ops::{Add, AddAssign, Mul},
+    ops::{Add, AddAssign, Deref, Mul},
     str::FromStr,
 };
 
@@ -122,4 +123,60 @@ impl Iterator for EvenRange {
 
 pub fn my_for_each<T>(v: &[T], mut f: impl Fn(&T)) {
     v.iter().for_each(f);
+}
+
+pub trait Named {
+    fn name(&self) -> &str;
+}
+
+pub struct Dog {
+    pub name: &'static str,
+}
+
+impl Named for Dog {
+    fn name(&self) -> &str {
+        self.name
+    }
+}
+
+pub struct Human {
+    pub name: &'static str,
+}
+
+impl Named for Human {
+    fn name(&self) -> &str {
+        self.name
+    }
+}
+
+pub fn get_first_name(v: &[Box<dyn Named>]) -> Option<&str> {
+    v.first().map(|b| b.name())
+}
+
+pub fn safe_zip_with<A, B, C, F>(a: Option<A>, b: Option<B>, f: F) -> Option<C>
+where
+    F: Fn(A, B) -> C,
+{
+    let inner_a = a?;
+    let inner_b = b?;
+    Some(f(inner_a, inner_b))
+}
+
+impl From<Dog> for String {
+    fn from(value: Dog) -> Self {
+        value.name.to_string()
+    }
+}
+
+pub fn make_string<T: Into<String>>(val: T) -> String {
+    val.into()
+}
+
+pub struct MyVec<T>(pub Vec<T>);
+
+impl<T> Deref for MyVec<T> {
+    type Target = Vec<T>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
