@@ -2,6 +2,7 @@
 
 use std::cmp::Eq;
 use std::collections::HashMap;
+use std::fmt::format;
 use std::hash::Hash;
 
 // pub fn invert_map<K, V>(m: &mut HashMap<K, V>) -> HashMap<V, K>
@@ -174,4 +175,213 @@ pub fn count_pairs(s: &str, open: char, close: char) -> usize {
 
     let (larger, smaller) = if l >= r { (l, r) } else { (r, l) };
     smaller as usize
+}
+
+pub fn csv_to_table(rows: &[&str]) -> Vec<Vec<String>> {
+    rows.iter()
+        .map(|&r| r.split(",").map(|v| v.to_string()).collect::<Vec<String>>())
+        .collect()
+}
+
+fn try_parse_u64(o: Option<&str>) -> Result<u64, String> {
+    let a_err = "No more values in iterator";
+    let b_err = "Error parsing int";
+
+    let v = o
+        .ok_or(a_err.to_string())?
+        .parse::<u64>()
+        .map_err(|_| b_err.to_string())?;
+
+    Ok(v)
+}
+
+pub fn hms_to_s(s: &str) -> Result<u64, String> {
+    let mut vals = s.split(":");
+
+    let h = try_parse_u64(vals.next())?;
+    let m = try_parse_u64(vals.next())?;
+    let s = try_parse_u64(vals.next())?;
+
+    let hh = h * 60 * 60;
+    let mm = m * 60;
+
+    Ok(hh + mm + s)
+}
+
+pub fn abbr_helper(s: &str) -> String {
+    let (f, _) = s.split_at(1);
+    format!("{f}.")
+}
+
+pub fn abbreviate(full_name: &str) -> String {
+    let parts = full_name.split(" ").collect::<Vec<&str>>();
+
+    match parts.split_last() {
+        None => "".to_string(),
+        Some((last, others)) => {
+            let abbreviated = others
+                .iter()
+                .map(|s| abbr_helper(s))
+                .collect::<Vec<String>>()
+                .join(" ");
+            format!("{abbreviated} {last}")
+        }
+    }
+}
+
+pub fn rollup(entries: &[(&str, f64)]) -> HashMap<String, f64> {
+    entries.iter().fold(HashMap::new(), |mut acc, (cat, amt)| {
+        *acc.entry(cat.to_string()).or_default() += amt;
+        acc
+    })
+}
+
+pub fn converge<T: Clone + PartialEq>(val: T, f: impl Fn(T) -> T) -> T {
+    let next = f(val.clone());
+    if next == val { next } else { converge(next, f) }
+}
+
+pub struct Stack<T> {
+    v: Vec<T>,
+}
+
+impl<T> Stack<T> {
+    pub fn new() -> Self {
+        Self { v: vec![] }
+    }
+
+    pub fn push(&mut self, v: T) {
+        self.v.push(v);
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        self.v.pop()
+    }
+
+    pub fn peek(&self) -> Option<&T> {
+        self.v.last()
+    }
+
+    pub fn empty(self) -> bool {
+        self.v.is_empty()
+    }
+}
+
+pub struct Queue<T> {
+    s1: Stack<T>,
+    s2: Stack<T>,
+}
+
+impl<T> Queue<T> {
+    pub fn new() -> Self {
+        Self {
+            s1: Stack::new(),
+            s2: Stack::new(),
+        }
+    }
+
+    pub fn enqueue(&mut self, v: T) {
+        while let Some(o) = self.s1.pop() {
+            self.s2.push(o);
+        }
+
+        self.s1.push(v);
+
+        while let Some(o) = self.s2.pop() {
+            self.s1.push(o);
+        }
+    }
+
+    pub fn dequeue(&mut self) -> Option<T> {
+        self.s1.pop()
+    }
+
+    pub fn front(&self) -> Option<&T> {
+        self.s1.peek()
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub enum Nested<T: Clone + PartialEq> {
+    Val(T),
+    Values(Vec<Nested<T>>),
+}
+
+pub fn flatten_nested<T: Clone + PartialEq>(n: Nested<T>, depth: usize) -> Vec<Nested<T>> {
+    if depth == 0 {
+        return match n {
+            Nested::Val(v) => vec![Nested::Val(v)],
+            Nested::Values(v) => v,
+        };
+    }
+
+    match n {
+        Nested::Val(v) => vec![Nested::Val(v)],
+        Nested::Values(v) => match v.split_first() {
+            None => vec![],
+            Some((hd, tl)) => {
+                let mut ret = flatten_nested(hd.clone(), depth - 1);
+
+                let items: Vec<Nested<T>> = tl
+                    .iter()
+                    .flat_map(|item| flatten_nested(item.clone(), depth - 1))
+                    .collect();
+
+                ret.extend(items);
+
+                ret
+            }
+        },
+    }
+}
+
+pub fn map_in_place(v: &mut [i32], f: impl Fn(i32) -> i32) {
+    v.iter_mut().for_each(|v| {
+        *v = f(*v);
+    });
+}
+
+pub fn find_all_idx<T>(v: &[T], pred: impl Fn(&T) -> bool) -> Vec<usize> {
+    v.iter()
+        .enumerate()
+        .filter_map(|(pos, elm)| if pred(elm) { Some(pos) } else { None })
+        .collect()
+}
+
+pub fn map_average(m: &HashMap<String, f64>) -> Option<f64> {
+    if m.is_empty() {
+        None
+    } else {
+        let sum = m.iter().fold(0.0, |acc, (_, v)| acc + v);
+        Some(sum / (m.len() as f64))
+    }
+}
+
+pub struct Pipeline<T> {
+    v: T,
+}
+
+impl<T> Pipeline<T> {
+    pub fn new(v: T) -> Self {
+        Self { v }
+    }
+
+    pub fn pipe<F>(self, f: F) -> Self
+    where
+        F: Fn(&T) -> T,
+    {
+        Self { v: f(&self.v) }
+    }
+
+    pub fn tap<F>(self, f: F) -> Self
+    where
+        F: Fn(&T),
+    {
+        f(&self.v);
+        self
+    }
+
+    pub fn finish(self) -> T {
+        self.v
+    }
 }
