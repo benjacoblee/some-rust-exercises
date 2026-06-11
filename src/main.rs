@@ -6,6 +6,8 @@ mod err_res_chaining;
 mod err_res_chaining_tests;
 mod generics_traits;
 mod generics_traits_tests;
+mod iterator_transforms;
+mod iterator_transforms_tests;
 mod iterators_option_result;
 mod iterators_option_result_tests;
 mod misc;
@@ -18,6 +20,8 @@ mod structs_enums_pattern_matching;
 mod structs_enums_pattern_matching_tests;
 mod traits;
 mod traits_tests;
+mod vecs_slices;
+mod vecs_slices_tests;
 
 fn main() {
     println!("Hello, world!");
