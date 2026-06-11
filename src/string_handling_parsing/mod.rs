@@ -191,3 +191,75 @@ pub fn indent(s: &str, spaces: usize) -> String {
         .collect::<Vec<String>>()
         .join("\n")
 }
+
+pub fn tc(s: &str) -> String {
+    if s.is_empty() {
+        return "".into();
+    }
+
+    let (chd, ctl) = s.split_at(1);
+    format!("{}{}", chd.to_ascii_uppercase(), ctl.to_ascii_lowercase())
+}
+
+pub fn new_title_case(s: &str) -> String {
+    s.split(" ").map(tc).collect::<Vec<String>>().join(" ")
+}
+
+pub fn truncate_with_ellips(s: &str, max_len: usize) -> String {
+    if max_len > s.len() {
+        return s.to_string();
+    }
+
+    let sl = &s[0..max_len];
+    format!("{sl}...")
+}
+
+#[derive(PartialEq)]
+pub enum PadDir {
+    Left,
+    Right,
+}
+
+pub fn pad_l_r(s: &str, total_width: usize, pad_char: char, dir: PadDir) -> String {
+    if s.len() >= total_width {
+        return s.to_string();
+    }
+
+    let n_times = total_width - s.len();
+    let pad_str = pad_char.to_string().repeat(n_times);
+
+    if dir == PadDir::Left {
+        format!("{pad_str}{s}")
+    } else {
+        format!("{s}{pad_str}")
+    }
+}
+
+pub fn strip_prefix_if<'a>(s: &'a str, prefix: &str) -> &'a str {
+    if !s.starts_with(prefix) {
+        return s;
+    }
+
+    let idx = prefix.len();
+
+    &s[idx..]
+}
+
+pub fn repeat_with_sep(s: &str, n: usize, sep: &str) -> String {
+    let with_sep = format!("{}{}", s, sep);
+    with_sep.repeat(3)
+}
+
+pub fn file_extension(path: &str) -> Option<&str> {
+    match path.split_once('.') {
+        None => None,
+        Some((_, tl)) => Some(tl),
+    }
+}
+
+pub fn replace_nth_char(s: &str, n: usize, replacement: char) -> String {
+    s.chars()
+        .enumerate()
+        .map(|(m, ch)| if (m == n) { replacement } else { ch })
+        .collect()
+}

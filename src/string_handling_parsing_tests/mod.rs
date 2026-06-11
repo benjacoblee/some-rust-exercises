@@ -148,3 +148,60 @@ fn it_adds_indent() {
     let w = cur.peek();
     assert_eq!(Some("    really amazing"), w.map(|el| el.as_str()));
 }
+
+#[test]
+fn it_titlecases() {
+    let s = "HELLO WORLD";
+    assert_eq!(tc(s), "Hello world");
+    assert_eq!(tc("something"), "Something");
+    assert_eq!(tc("SOMETHING"), "Something");
+    assert_eq!(tc(""), "");
+}
+
+#[test]
+fn it_truncates_with_ellipsis() {
+    let n = 4;
+    let s = "hello world";
+    let r = truncate_with_ellips(s, n);
+    assert_eq!(r, "hell...".to_string());
+}
+
+#[test]
+fn it_pads_left() {
+    let w = 6;
+    let s = "cow";
+    let r = pad_l_r(s, w, '#', PadDir::Left);
+    assert_eq!(r, "###cow");
+    let r = pad_l_r(s, w, '#', PadDir::Right);
+    assert_eq!(r, "cow###");
+    let r = pad_l_r(s, 1, '#', PadDir::Left);
+    assert_eq!(r, "cow");
+}
+
+#[test]
+fn it_strips_prefix_if() {
+    let prefix = "wha";
+    assert_eq!(strip_prefix_if("sth", prefix), "sth");
+    assert_eq!(strip_prefix_if("what", prefix), "t");
+}
+
+#[test]
+fn it_repeats_with_sep() {
+    let sep = "!";
+    let s = "wow";
+    let r = repeat_with_sep(s, 3, sep);
+    assert_eq!(r, "wow!wow!wow!");
+}
+
+#[test]
+fn it_gets_file_ext() {
+    assert_eq!(file_extension("path"), None);
+    assert_eq!(file_extension("mod.rs"), Some("rs"));
+}
+
+#[test]
+fn it_replaces_nth_ch() {
+    let s = "wow";
+    let r = replace_nth_char(s, 1, '0');
+    assert_eq!(r, "w0w");
+}
