@@ -150,3 +150,92 @@ fn it_impls_partial_ord_for_score() {
 
     assert!(s2 > s1);
 }
+
+#[test]
+fn it_impls_default_for_cfg() {
+    let c = Cfg::default();
+    let r = Cfg {
+        width: 800,
+        height: 600,
+        title: "Untitled".to_string(),
+        fullscreen: false,
+    };
+    assert!(c == r);
+}
+
+#[test]
+fn it_produces_email_from_email_builder() {
+    let e = Email {
+        to: Some("b".to_string()),
+        subject: Some("subject".to_string()),
+        body: Some("body".to_string()),
+    };
+
+    let b = EmailBuilder::new()
+        .to("b")
+        .subject("subject")
+        .body("body")
+        .build();
+
+    assert_eq!(e, b);
+
+    let b = EmailBuilder::new().to("").subject("").body("").build();
+
+    assert_eq!(
+        b,
+        Email {
+            to: None,
+            subject: None,
+            body: None
+        }
+    );
+}
+
+#[test]
+fn it_impls_partial_ord_eq_for_version() {
+    let mut v = &mut [V::Major, V::Minor, V::Minor, V::Patch, V::Minor, V::Patch];
+    v.sort();
+    assert!(v.is_sorted());
+    assert!(v.first() == Some(&V::Patch));
+    assert!(v.last() == Some(&V::Major));
+}
+
+#[test]
+fn it_overrides_profile() {
+    let base = Profile {
+        name: None,
+        bio: Some("the bio".to_string()),
+        avatar_url: None,
+    };
+    let override_ = Profile {
+        name: Some("new name".to_string()),
+        bio: None,
+        avatar_url: None,
+    };
+    let expected = Profile {
+        name: Some("new name".to_string()),
+        bio: Some("the bio".to_string()),
+        avatar_url: None,
+    };
+    let r = Profile::merge_profiles(base, override_);
+    assert_eq!(r, expected);
+}
+
+#[test]
+fn it_parses_labels_to_records() {
+    let labels = vec!["name:jon", "something:other"];
+    let r = parses_labels_to_records(labels);
+    assert!(r.len() == 2);
+    let record = Record {
+        k: "name",
+        v: "jon",
+    };
+    assert_eq!(r.first(), Some(&record));
+}
+
+#[test]
+fn it_impls_maybe_int() {
+    let v = MaybeInt::Int(1);
+    let v = v.inc().inc().inc().inc();
+    assert_eq!(v, MaybeInt::Int(5));
+}

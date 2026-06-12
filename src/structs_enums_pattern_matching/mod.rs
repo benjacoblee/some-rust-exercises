@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 use std::{
+    cmp::Ordering::{self, Equal, Greater, Less},
     collections::HashMap,
     fmt::{Display, Formatter},
     ops::Add,
@@ -207,5 +208,211 @@ impl PartialEq for Score {
 impl PartialOrd for Score {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.value.cmp(&other.value))
+    }
+}
+
+#[derive(PartialEq, Eq)]
+pub struct Cfg {
+    pub width: u32,
+    pub height: u32,
+    pub title: String,
+    pub fullscreen: bool,
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self {
+            width: 800,
+            height: 600,
+            title: "Untitled".to_string(),
+            fullscreen: false,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Email {
+    pub to: Option<String>,
+    pub subject: Option<String>,
+    pub body: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EmailBuilder {
+    pub to: Option<String>,
+    pub subject: Option<String>,
+    pub body: Option<String>,
+}
+
+impl EmailBuilder {
+    pub fn new() -> Self {
+        Self {
+            to: None,
+            subject: None,
+            body: None,
+        }
+    }
+
+    pub fn to(self, s: &str) -> Self {
+        if s.is_empty() {
+            return self;
+        }
+
+        Self {
+            to: Some(s.to_string()),
+            ..self
+        }
+    }
+
+    pub fn subject(self, s: &str) -> Self {
+        if s.is_empty() {
+            return self;
+        }
+
+        Self {
+            subject: Some(s.to_string()),
+            ..self
+        }
+    }
+
+    pub fn body(self, s: &str) -> Self {
+        if s.is_empty() {
+            return self;
+        }
+
+        Self {
+            body: Some(s.to_string()),
+            ..self
+        }
+    }
+
+    pub fn build(self) -> Email {
+        Email {
+            to: self.to,
+            subject: self.subject,
+            body: self.body,
+        }
+    }
+}
+
+pub enum Direction {
+    Left,
+    Right,
+    Up,
+    Down,
+}
+
+fn direction_to_str(d: Direction) -> String {
+    match d {
+        Direction::Down => "down".into(),
+        Direction::Left => "left".into(),
+        Direction::Up => "up".into(),
+        _ => "right".into(),
+    }
+}
+
+fn str_to_direction(s: &str) -> Option<Direction> {
+    match s {
+        "up" => Some(Direction::Up),
+        "down" => Some(Direction::Down),
+        "left" => Some(Direction::Left),
+        "right" => Some(Direction::Right),
+        _ => None,
+    }
+}
+
+#[derive(Debug)]
+pub enum V {
+    Patch,
+    Minor,
+    Major,
+}
+
+impl PartialEq for V {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (V::Patch, V::Patch) => true,
+            (V::Minor, V::Minor) => true,
+            (V::Major, V::Major) => true,
+            (_, _) => false,
+        }
+    }
+}
+
+impl Eq for V {}
+
+impl Ord for V {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match (self, other) {
+            (a, b) if a == b => Ordering::Equal,
+            (V::Patch, _) => Ordering::Less,
+            (V::Minor, V::Major) => Ordering::Less,
+            (V::Minor, V::Patch) => Ordering::Greater,
+            (V::Major, _) => Ordering::Greater,
+            (V::Minor, V::Minor) => Ordering::Equal,
+        }
+    }
+}
+
+impl PartialOrd for V {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(PartialEq, Debug)]
+pub struct Profile {
+    pub name: Option<String>,
+    pub bio: Option<String>,
+    pub avatar_url: Option<String>,
+}
+
+impl Profile {
+    pub fn merge_profiles(base: Self, override_: Self) -> Self {
+        Self {
+            name: override_.name.or(base.name),
+            bio: override_.bio.or(base.bio),
+            avatar_url: override_.avatar_url.or(base.avatar_url),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Record<'a> {
+    pub k: &'a str,
+    pub v: &'a str,
+}
+
+impl<'a> Record<'a> {
+    fn parse(s: &'a str) -> Option<Self> {
+        s.split_once(":").map(|(k, v)| Self { k, v })
+    }
+}
+
+pub fn parses_labels_to_records(v: Vec<&str>) -> Vec<Record<'_>> {
+    v.into_iter()
+        .map(Record::parse)
+        .filter_map(|o| {
+            if let Some(Record { k, v }) = o {
+                Some(Record { k, v })
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+#[derive(Debug, PartialEq)]
+pub enum MaybeInt {
+    None,
+    Int(i32),
+}
+
+impl MaybeInt {
+    pub fn inc(self) -> Self {
+        match self {
+            Self::Int(v) => Self::Int(v + 1),
+            none => none,
+        }
     }
 }
