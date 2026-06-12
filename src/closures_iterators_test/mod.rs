@@ -69,3 +69,120 @@ fn it_finds_min_idx() {
     let r = min_index(v);
     assert!(r == Some(expected));
 }
+
+#[test]
+fn it_chains_vecs() {
+    let a = &["a", "b"];
+    let b = &["c", "d"];
+    let r = concat_vecs(a, b);
+    assert_eq!(r, &["a", "b", "c", "d"]);
+}
+
+#[test]
+fn it_joins_a_list_of_i32() {
+    let v = &[1, 2, 3, 4, 5];
+    let r = join_with(v, "!");
+    assert_eq!(r, "1!2!3!4!5");
+}
+
+#[test]
+fn it_takes_every_nth() {
+    let v = &[1, 2, 3, 4, 5];
+    let r = every_nth(v, 2);
+    assert_eq!(r, &[1, 3, 5]);
+}
+
+#[test]
+fn it_takes_every_even_indexed_item() {
+    let v = &["a", "b", "c", "d"];
+    let r = even_indexed_items(v);
+    assert_eq!(r, &["a", "c"]);
+}
+
+#[test]
+fn it_finds_min_max() {
+    let v = &[1, 2, 3, 100, -500, 20_000];
+    let r = min_max(v);
+    assert_eq!(r, Some((-500, 20_000)))
+}
+
+#[test]
+fn it_expands_a_vec_of_strs() {
+    let v = &["hi", "bye"];
+    assert_eq!(expand_words(v), &['h', 'i', 'b', 'y', 'e']);
+}
+
+#[test]
+fn it_gets_variance() {
+    let r = total_variation(&[1, 10, 2, 9]);
+    assert_eq!(r, 24);
+    assert_eq!(total_variation(&[5, 5, 5, 5]), 0);
+}
+
+#[test]
+fn it_applies_twice() {
+    let r = apply_twice(|x: i32| x + x, 1);
+    assert_eq!(r, 4);
+}
+
+#[test]
+fn it_composes() {
+    let add2 = |x: i32| x + 2;
+    let to_str = |x: i32| x.to_string();
+    let r = compose(add2, to_str);
+    assert_eq!(r(2), "4");
+}
+
+#[test]
+fn it_maps_if() {
+    let a = map_if(2, 2 == 2, |x| x + 2);
+    assert_eq!(a, 4);
+    let b = map_if(2, 2 != 2, |x| x + 2);
+    assert_eq!(b, 2);
+}
+
+#[test]
+fn it_reduces() {
+    let v = &[1, 2, 3, 4, 5];
+    let result: Option<i32> = my_reduce(v, &|acc, x| acc + x);
+    assert_eq!(result, Some(15));
+}
+
+#[test]
+fn it_curries_add() {
+    let add5 = curried_add(5);
+    assert_eq!(add5(5), 10);
+}
+
+#[test]
+fn it_allows_sorting_by_key() {
+    let mut v = vec![
+        Student { grade: 20 },
+        Student { grade: 14 },
+        Student { grade: 55 },
+    ];
+    let r = sort_by_grade(v, |x| x.grade);
+    assert!(r.is_sorted());
+}
+
+#[test]
+fn it_applies_repeatedly() {
+    let r = apply_until(1, |x| x + 1, |x| x == 10);
+    assert_eq!(r, 10);
+}
+
+#[test]
+fn it_does_three_way_partition() {
+    let v = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let (low, mid, high) = three_way_partition(v, |&x| x < 5, |&x| x > 5);
+    assert_eq!(low, vec![1, 2, 3, 4]);
+    assert_eq!(mid, vec![5]);
+    assert_eq!(high, vec![6, 7, 8, 9])
+}
+
+#[test]
+fn it_maps_tuple() {
+    let t = (1, 1);
+    let (a, _) = map_pair(t, |x| x.to_string());
+    assert_eq!(a, "1");
+}
