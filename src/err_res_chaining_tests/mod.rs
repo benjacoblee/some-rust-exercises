@@ -118,3 +118,58 @@ pub fn it_collects_errors_if_any() {
     let r = validate_password(s);
     assert!(r.is_err_and(|inner| inner.len() == 2))
 }
+
+#[test]
+pub fn it_converts_opt_to_res() {
+    let o: Option<i32> = None;
+    let r = option_to_result(o, "err");
+    assert!(r.is_err_and(|msg| msg == "err"));
+}
+
+#[test]
+pub fn it_converts_res_to_opt() {
+    let v: Result<i32, &str> = Err("");
+    let r = result_to_option(v);
+    assert!(r.is_none());
+}
+
+#[test]
+pub fn it_applies_fn_to_2_wrapped_values() {
+    let a = Some(2);
+    let b = Some(2);
+    let f = |x: i32, y: i32| x + y;
+    let r = lift2(a, b, f);
+    assert_eq!(r, Some(4));
+}
+
+#[test]
+pub fn it_falls_back_to_closure_value_if_opt_is_none() {
+    let o = None;
+    let r = or_else_compute(o, || 100);
+    assert_eq!(r, 100);
+    assert_eq!(or_else_compute(Some(2), || 100), 2);
+}
+
+#[test]
+pub fn it_returns_opts_if_all_are_some() {
+    let v = vec![Some(1), Some(2), Some(3)];
+    let r = sequence_options(v);
+    assert!(r.is_some_and(|v| v.len() == 3));
+    let v = vec![Some(1), Some(2), None];
+    let r = sequence_options(v);
+    assert!(r.is_none());
+}
+
+#[test]
+pub fn it_provides_string_msg_on_parse_failure() {
+    let r = parse_positive("-1");
+    assert!(r.is_err_and(|e| e.contains("Error: ")));
+}
+
+#[test]
+pub fn it_gets_first_ok_or_error_if_none_ok() {
+    let v: &[Result<u32, &str>] = &[Err("err")];
+    assert_eq!(first_ok_or_err(v), Err("bad".to_string()));
+    let v: &[Result<u32, &str>] = &[Err("err"), Ok(44)];
+    assert_eq!(first_ok_or_err(v), Ok(44));
+}

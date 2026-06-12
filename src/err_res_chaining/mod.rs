@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::{collections::HashMap, error::Error, num::ParseIntError};
+use std::{collections::HashMap, error::Error, fmt::format, num::ParseIntError};
 
 pub fn parse_and_double(s: &str) -> Option<i32> {
     s.parse::<i32>().ok().map(|el| el * 2)
@@ -165,4 +165,54 @@ pub fn validate_password(s: &str) -> Result<(), Vec<String>> {
         .collect::<Vec<String>>();
 
     if errs.is_empty() { Ok(()) } else { Err(errs) }
+}
+
+pub fn option_to_result<T>(o: Option<T>, err: &'static str) -> Result<T, &'static str> {
+    o.ok_or(err)
+}
+
+pub fn result_to_option<T, E>(r: Result<T, E>) -> Option<T> {
+    r.ok()
+}
+
+pub fn lift2<A, B, C, F>(a: Option<A>, b: Option<B>, f: F) -> Option<C>
+where
+    F: Fn(A, B) -> C,
+{
+    match (a, b) {
+        (Some(x), Some(y)) => Some(f(x, y)),
+        (_, _) => None,
+    }
+}
+
+pub fn or_else_compute(o: Option<i32>, f: impl FnOnce() -> i32) -> i32 {
+    o.unwrap_or_else(f)
+}
+
+pub fn sequence_options<T: Clone>(v: Vec<Option<T>>) -> Option<Vec<T>> {
+    let o_len = v.len();
+    let opts = v.into_iter().flatten().collect::<Vec<T>>();
+
+    if opts.len() == o_len {
+        Some(opts)
+    } else {
+        None
+    }
+}
+
+pub fn parse_positive(s: &str) -> Result<u32, String> {
+    s.parse::<u32>().map_err(|e| format!("Error: {e}"))
+}
+
+pub fn flatten_result<T, E>(r: Result<Result<T, E>, E>) -> Result<T, E> {
+    r.flatten()
+}
+
+pub fn first_ok_or_err<T: Clone, E: Clone>(v: &[Result<T, E>]) -> Result<T, String> {
+    let opt = v.iter().find(|v| v.is_ok());
+
+    match opt {
+        Some(Ok(v)) => Ok(v.clone()),
+        _ => Err("bad".to_string()),
+    }
 }
