@@ -191,7 +191,7 @@ where
 {
     let new_val = f(val);
 
-    if done(new_val.clone()) {
+    if !done(new_val.clone()) {
         apply_until(new_val, f, done)
     } else {
         new_val
