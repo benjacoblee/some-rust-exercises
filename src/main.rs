@@ -16,6 +16,8 @@ mod misc;
 mod misc_tests;
 mod ownership;
 mod ownership_tests;
+mod shaping_data;
+mod shaping_data_tests;
 mod string_handling_parsing;
 mod string_handling_parsing_tests;
 mod structs_enums_pattern_matching;
