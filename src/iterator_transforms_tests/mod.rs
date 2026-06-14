@@ -37,3 +37,31 @@ fn it_sums_every_nth() {
     assert_eq!(step_by_sum(v, 2), 6);
     assert_eq!(step_by_sum(v, 2), step_by_sum2(v, 2));
 }
+
+#[test]
+pub fn it_zips_iter() {
+    let a = &[1, 2, 3, 4, 5];
+    let b = &[1, 2, 3];
+    let r = zip_sum(a, b);
+    assert_eq!(r, &[2, 4, 6])
+}
+
+#[test]
+pub fn it_enumerates_and_filters() {
+    let v = &[1, 2, 3, 4, 5];
+    let r = enumerate_filter(v, |&x| x == 2);
+    let u: usize = 1;
+    assert_eq!(r, &[(u, &2)]);
+}
+
+#[test]
+pub fn it_folds_strings() {
+    let v = &["a", "b", "c"];
+    assert_eq!(fold_strings(v, ","), "a,b,c")
+}
+
+#[test]
+pub fn it_maps_alternating() {
+    let r = map_alternating(&[1, 2, 3, 4, 5], |x| x * 100);
+    assert_eq!(r, &[100, 2, 300, 4, 500]);
+}

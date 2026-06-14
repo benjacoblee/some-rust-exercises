@@ -104,3 +104,66 @@ pub fn it_impls_deref() {
     let mv = MyVec(vec![1, 2, 3, 4]);
     assert_eq!(vec![1, 2, 3, 4], *mv)
 }
+
+#[test]
+pub fn it_swaps() {
+    let p = Pair { a: 1, b: '1' };
+    let r = swap(p);
+    assert_eq!(r.a, '1');
+}
+
+#[test]
+pub fn it_impls_iter_for_counter() {
+    let mut c = Counter {
+        current: 1,
+        max: 100,
+    }
+    .collect::<Vec<u32>>();
+
+    assert_eq!(c.len(), 100);
+}
+
+#[test]
+pub fn it_impls_map_for_stack() {
+    let mut stk = Stack { v: vec![1, 2, 3] };
+    stk.push(4);
+    let new_stk = stk.map(|item| item.to_string());
+    assert_eq!(*new_stk, vec!["1", "2", "3", "4"]);
+}
+
+#[test]
+pub fn it_impls_display_for_season() {
+    let s = Season::Winter;
+    let r = s.to_string();
+    assert_eq!(r, "Season(Winter)");
+}
+
+#[test]
+pub fn it_impls_map_and_unwrap_for_mymaybe() {
+    let m = MyMaybe::Nothing;
+    assert_eq!(m.unwrap_or(0), 0);
+    let m = MyMaybe::Just(2);
+    let m = m.map(|i| i * 100);
+    assert_eq!(m.unwrap_or(0), 200);
+}
+
+#[test]
+pub fn it_impls_index_for_wrapper_type() {
+    let m = Mrapper::new().add("this", "that");
+    let v = m["this"];
+    assert_eq!(v, "that");
+}
+
+#[test]
+pub fn it_impls_from_iter_for_custom_struct() {
+    let mut v = vec![100, 25, 28];
+    let iter = v.into_iter();
+    let r = SortedV::from_iter(iter);
+    assert_eq!(r.0, vec![25, 28, 100]);
+}
+
+#[test]
+pub fn it_pipes() {
+    let r = pipe(pipe(2, |x| x + 1), |x| x * 100);
+    assert_eq!(r, 300);
+}

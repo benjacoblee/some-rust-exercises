@@ -10,6 +10,8 @@ mod generics_traits;
 mod generics_traits_tests;
 mod hashes;
 mod hashes_tests;
+mod iterator_transforms;
+mod iterator_transforms_tests;
 mod iterators_option_result;
 mod iterators_option_result_tests;
 mod misc;

@@ -2,10 +2,11 @@
 
 use std::{
     collections::{HashMap, HashSet},
-    fmt::format,
+    fmt::{Display, format},
     hash::Hash,
-    ops::{Add, AddAssign, Deref, Mul},
+    ops::{Add, AddAssign, Deref, DerefMut, Index, Mul},
     str::FromStr,
+    vec,
 };
 
 pub fn max_el<T: Ord>(v: &[T]) -> Option<&T> {
@@ -179,4 +180,157 @@ impl<T> Deref for MyVec<T> {
     fn deref(&self) -> &Self::Target {
         &self.0
     }
+}
+
+pub struct Pair<A, B> {
+    pub a: A,
+    pub b: B,
+}
+
+pub fn swap<A, B>(p: Pair<A, B>) -> Pair<B, A> {
+    Pair { a: p.b, b: p.a }
+}
+
+pub struct Counter {
+    pub current: u32,
+    pub max: u32,
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+    fn next(&mut self) -> Option<Self::Item> {
+        let cur = self.current;
+
+        if cur <= self.max {
+            self.current += 1;
+            return Some(cur);
+        }
+
+        None
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Stack<T> {
+    pub v: Vec<T>,
+}
+
+impl<T> DerefMut for Stack<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.v
+    }
+}
+
+impl<T> Deref for Stack<T> {
+    type Target = Vec<T>;
+    fn deref(&self) -> &Self::Target {
+        &self.v
+    }
+}
+
+impl<T> Stack<T> {
+    pub fn map<U>(self, f: impl Fn(T) -> U) -> Stack<U> {
+        let v = self.v.into_iter().map(f).collect::<Vec<U>>();
+        Stack { v }
+    }
+}
+
+pub enum Season {
+    Winter,
+    Spring,
+    Autumn,
+    Summer,
+}
+
+impl Display for Season {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let season = match self {
+            Season::Autumn => "Autumn",
+            Season::Spring => "Spring",
+            Season::Summer => "Summer",
+            Season::Winter => "Winter",
+        };
+
+        write!(f, "Season({})", season)
+    }
+}
+
+pub enum MyMaybe<T> {
+    Nothing,
+    Just(T),
+}
+
+impl<T> MyMaybe<T> {
+    pub fn map<F, U>(self, f: F) -> MyMaybe<U>
+    where
+        F: Fn(T) -> U,
+    {
+        match self {
+            MyMaybe::Nothing => MyMaybe::Nothing,
+            MyMaybe::Just(v) => MyMaybe::Just(f(v)),
+        }
+    }
+
+    pub fn unwrap_or(self, t: T) -> T {
+        match self {
+            MyMaybe::Nothing => t,
+            MyMaybe::Just(v) => v,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Mrapper<T: Hash + Eq, U> {
+    vals: HashMap<T, U>,
+}
+
+impl<T: Hash + Eq, U> Index<T> for Mrapper<T, U> {
+    type Output = U;
+
+    fn index(&self, idx: T) -> &Self::Output {
+        &self.vals[&idx]
+    }
+}
+
+impl<T: Hash + Eq, U> Mrapper<T, U> {
+    pub fn new() -> Self {
+        Self {
+            vals: HashMap::new(),
+        }
+    }
+
+    pub fn add(mut self, k: T, v: U) -> Self {
+        self.vals.insert(k, v);
+        self
+    }
+}
+
+pub struct SortedV(pub Vec<i32>);
+
+impl SortedV {
+    fn new() -> Self {
+        Self(vec![])
+    }
+
+    fn add(&mut self, v: i32) {
+        self.0.push(v)
+    }
+}
+
+impl FromIterator<i32> for SortedV {
+    fn from_iter<T: IntoIterator<Item = i32>>(iter: T) -> Self {
+        let mut c = SortedV::new();
+
+        for i in iter {
+            c.add(i);
+        }
+
+        c.0.sort();
+
+        c
+    }
+}
+
+pub fn pipe<T, U>(value: T, f: impl FnOnce(T) -> U) -> U {
+    f(value)
 }
