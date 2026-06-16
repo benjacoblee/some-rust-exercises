@@ -385,3 +385,58 @@ impl<T> Pipeline<T> {
         self.v
     }
 }
+
+pub struct Row {
+    target_len: usize,
+    initial_num: usize,
+    start: usize,
+}
+
+impl Row {
+    pub fn new(initial_num: usize, target_len: usize) -> Self {
+        Self {
+            target_len,
+            initial_num,
+            start: 0,
+        }
+    }
+
+    pub fn make(&self) -> Vec<usize> {
+        // fn go(s: &Row, inner_prev: usize, accum: &mut Vec<usize>) -> Vec<usize> {
+        //     if accum.len() == s.target_len {
+        //         return accum.to_vec();
+        //     }
+
+        //     let new_prev = inner_prev + s.initial_num;
+
+        //     accum.push(new_prev);
+
+        //     go(s, new_prev, accum)
+        // }
+
+        // go(self, self.start, &mut vec![])
+
+        // let mut ret: Vec<usize> = Vec::with_capacity(self.target_len);
+
+        // for i in 0..self.target_len {
+        //     let it = (i + 1) * self.initial_num;
+        //     ret.push(it);
+        // }
+
+        // ret
+
+        (1..=self.target_len)
+            .map(|i| i * self.initial_num)
+            .collect()
+    }
+}
+
+pub fn mult_table(n: usize) -> Vec<Vec<usize>> {
+    let initial = Row::new(1, n).make();
+
+    initial.iter().fold(vec![], |mut acc, curr| {
+        let row = Row::new(*curr, n).make();
+        acc.push(row);
+        acc
+    })
+}

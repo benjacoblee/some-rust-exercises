@@ -205,3 +205,77 @@ fn it_replaces_nth_ch() {
     let r = replace_nth_char(s, 1, '0');
     assert_eq!(r, "w0w");
 }
+
+#[test]
+fn it_extracts_numbers() {
+    let s = "abc12390";
+    let r = extract_numbers(s);
+    assert_eq!(r, &[1, 2, 3, 9, 0])
+}
+
+#[test]
+fn it_initializes() {
+    let r = initials("Barack Obama");
+    assert_eq!(r, "B. O")
+}
+
+#[test]
+fn it_center_pads() {
+    let s = "abc";
+    let width = 10;
+    let pad = '#';
+    let expected = "###abc###";
+    assert_eq!(center(s, width, pad), expected);
+    let width = 9;
+    let expected = "###abc###";
+    assert_eq!(center(s, width, pad), expected);
+}
+
+#[test]
+fn it_decodes_rle() {
+    let v: &[(String, usize)] = &[
+        ("h".into(), 1),
+        ("e".into(), 1),
+        ("l".into(), 2),
+        ("o".into(), 1),
+        (" ".into(), 1),
+        ("w".into(), 1),
+        ("o".into(), 1),
+        ("r".into(), 1),
+        ("l".into(), 1),
+        ("d".into(), 1),
+    ];
+    assert_eq!(rle_decode(v), "hello world")
+}
+
+#[test]
+fn it_encodes_rle() {
+    let r = rle_encode("hello world");
+    let v: &[(String, usize)] = &[
+        ("h".into(), 1),
+        ("e".into(), 1),
+        ("l".into(), 2),
+        ("o".into(), 1),
+        (" ".into(), 1),
+        ("w".into(), 1),
+        ("o".into(), 1),
+        ("r".into(), 1),
+        ("l".into(), 1),
+        ("d".into(), 1),
+    ];
+    assert_eq!(r, v);
+}
+
+#[test]
+fn it_splits_once_on_specified_delim() {
+    let s = "hello world";
+    let r = split_once_on(s, ' ');
+    assert_eq!(r, Some(("hello", "world")));
+}
+
+#[test]
+fn it_converts_camelcase_to_snake_case() {
+    let s = "someFieldName";
+    let r = camel_to_snake(s);
+    assert_eq!(r, "some_field_name")
+}

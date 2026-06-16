@@ -249,3 +249,16 @@ pub fn it_impls_pipeline() {
     let v = p.pipe(|x| x * 2).tap(f).pipe(|x| x * 100).tap(f).finish();
     assert_eq!(v, 200);
 }
+
+#[test]
+pub fn it_makes_row() {
+    let v = Row::new(3, 5);
+    assert_eq!(v.make(), &[3, 6, 9, 12, 15]);
+}
+
+#[test]
+pub fn it_makes_table() {
+    let r = mult_table(3);
+    assert_eq!(r.len(), 3);
+    assert_eq!(r, &[&[1, 2, 3], &[2, 4, 6], &[3, 6, 9]])
+}

@@ -263,3 +263,76 @@ pub fn replace_nth_char(s: &str, n: usize, replacement: char) -> String {
         .map(|(m, ch)| if (m == n) { replacement } else { ch })
         .collect()
 }
+
+pub fn extract_numbers(s: &str) -> Vec<u32> {
+    s.chars()
+        .filter_map(|el| el.to_digit(10))
+        .collect::<Vec<u32>>()
+}
+
+pub fn initials(s: &str) -> String {
+    s.split(" ")
+        .filter_map(|el| Some(el.chars().next()?.to_string()))
+        .collect::<Vec<String>>()
+        .join(". ")
+}
+
+pub fn center(s: &str, width: usize, pad: char) -> String {
+    if width < s.len() {
+        return s.to_string();
+    }
+
+    let total_width_needed = (width - s.len());
+    let width_per_side = total_width_needed / 2;
+    let lr = pad.to_string().repeat(width_per_side);
+    format!("{}{}{}", lr, s, lr)
+}
+
+pub fn rle_decode(v: &[(String, usize)]) -> String {
+    v.iter().map(|(s, rep)| s.repeat(*rep)).collect::<String>()
+}
+
+pub fn rle_encode(v: &str) -> Vec<(String, usize)> {
+    if v.is_empty() {
+        return vec![];
+    }
+
+    let mut it = v.chars();
+    let hd = it.next().unwrap();
+    let (a, c, mut v) = it.fold((hd, 1, vec![]), |(acc_hd, count, mut my_vec), curr| {
+        if curr == acc_hd {
+            (acc_hd, count + 1, my_vec)
+        } else {
+            my_vec.push((acc_hd.to_string(), count));
+            (curr, 1, my_vec)
+        }
+    });
+
+    v.push((a.to_string(), c));
+
+    v
+}
+
+pub fn split_once_on(s: &str, delim: char) -> Option<(&str, &str)> {
+    let maybe_pos = s.chars().enumerate().find(|(pos, ch)| *ch == delim);
+
+    match maybe_pos {
+        None => None,
+        Some((i, _)) => Some((&s[0..i], &s[i + 1..])),
+    }
+}
+
+pub fn camel_to_snake(s: &str) -> String {
+    s.chars()
+        .fold(vec![], |mut acc, curr| {
+            if curr.is_ascii_uppercase() {
+                acc.extend(['_', curr.to_ascii_lowercase()]);
+                return acc;
+            }
+
+            acc.push(curr);
+            acc
+        })
+        .iter()
+        .collect::<String>()
+}
